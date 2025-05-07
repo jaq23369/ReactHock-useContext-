@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>useContext - Tema Claro/Oscuro</title>
+
+  <!-- React y ReactDOM desde CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+
+  <!-- Babel para soportar JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { createContext, useState, useContext } = React;
+
+    // 1. Crear el contexto para el tema
+    const ThemeContext = createContext();
+
+    // 2. Proveedor del tema, que envuelve toda la app
+    const ThemeProvider = ({ children }) => {
+      const [theme, setTheme] = useState('light'); // Tema actual: 'light' o 'dark'
+
+      // Función para alternar el tema
+      const toggleTheme = () => {
+        setTheme(prev => prev === 'light' ? 'dark' : 'light');
+      };
+
+      return (
+        // Provee el valor del contexto a todos los hijos
+        <ThemeContext.Provider value={{ theme, toggleTheme }}>
+          {children}
+        </ThemeContext.Provider>
+      );
+    };
+
+    // 3. Componente que permite cambiar de tema
+    const ThemeToggle = () => {
+      const { toggleTheme } = useContext(ThemeContext); // Usar el contexto
+
+      return (
+        <button onClick={toggleTheme} style={{ padding: '10px 20px', marginBottom: '20px' }}>
+          Cambiar Tema
+        </button>
+      );
+    };
+
+    // 4. Componente que muestra el tema actual con fondo dinámico
+    const ThemeDisplay = () => {
+      const { theme } = useContext(ThemeContext); // Acceder al contexto
+
+      const styles = {
+        padding: '20px',
+        backgroundColor: theme === 'light' ? '#fff' : '#333',
+        color: theme === 'light' ? '#000' : '#fff',
+        border: '1px solid #ccc',
+        textAlign: 'center',
+        borderRadius: '8px'
+      };
+
+      return (
+        <div style={styles}>
+          <h2>Modo actual: {theme === 'light' ? 'Claro' : 'Oscuro'}</h2>
+          <p>Este tema fue cambiado usando useContext.</p>
+        </div>
+      );
+    };
+
+    // 5. App principal que junta todo
+    const App = () => {
+      return (
+        <ThemeProvider>
+          <div style={{ fontFamily: 'Arial', padding: '40px', textAlign: 'center' }}>
+            <h1>Ejemplo con useContext</h1>
+            <ThemeToggle />
+            <ThemeDisplay />
+          </div>
+        </ThemeProvider>
+      );
+    };
+
+    // Renderizar la App
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
